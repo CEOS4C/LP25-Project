@@ -59,3 +59,64 @@ files_list_entry_t *add_file_entry(files_list_t *list, char *file_path) {
 
     return new_entry;
 }
+
+
+int add_entry_to_tail(files_list_t *list, files_list_entry_t *entry) {
+    if (list == NULL || entry == NULL) {
+        return -1;
+    }
+
+    if (list->tail == NULL) {
+        list->head = entry;
+        list->tail = entry;
+        entry->prev = NULL;
+        entry->next = NULL;
+    } else {
+        entry->prev = list->tail;
+        entry->next = NULL;
+        list->tail->next = entry;
+        list->tail = entry;
+    }
+
+    return 0;
+}
+
+files_list_entry_t *find_entry_by_name(files_list_t *list, char *file_path, size_t start_of_src, size_t start_of_dest) {
+    if (list == NULL || file_path == NULL) {
+        return NULL;
+    }
+
+    files_list_entry_t *current = list->head;
+
+    while (current != NULL) {
+        int cmp_result = strcmp(current->path_and_name, file_path);
+
+        if (cmp_result == 0) {
+            return current;
+        } else if (cmp_result > 0) {
+            break;
+        }
+
+        current = current->next;
+    }
+
+    return NULL;
+}
+
+void display_files_list(files_list_t *list) {
+    if (!list)
+        return;
+
+    for (files_list_entry_t *cursor = list->head; cursor != NULL; cursor = cursor->next) {
+        printf("%s\n", cursor->path_and_name);
+    }
+}
+
+void display_files_list_reversed(files_list_t *list) {
+    if (!list)
+        return;
+
+    for (files_list_entry_t *cursor = list->tail; cursor != NULL; cursor = cursor->prev) {
+        printf("%s\n", cursor->path_and_name);
+    }
+}
