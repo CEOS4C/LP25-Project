@@ -83,3 +83,18 @@ int compute_file_md5(files_list_entry_t *entry) {
 
     return 0;
 }
+
+bool directory_exists(char *path_to_dir) {
+    struct stat dir_stat;
+    return stat(path_to_dir, &dir_stat) == 0 && S_ISDIR(dir_stat.st_mode);
+}
+
+bool is_directory_writable(char *path_to_dir) {
+    int fd = open(path_to_dir, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+    if (fd != -1) {
+        close(fd);
+        return true;
+    }
+
+    return false;
+}
