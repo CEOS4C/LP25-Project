@@ -31,3 +31,51 @@ void init_configuration(configuration_t *the_config) {
         the_config->is_dry_run = false;
     }
 }
+
+int set_configuration(configuration_t *the_config, int argc, char *argv[]) {
+    if (the_config == NULL) {
+        fprintf(stderr, "Error : Pointer to invalid configuration.\n");
+        return -1;
+    }
+
+    init_configuration(the_config);
+
+    int opt;
+    while ((opt = getopt(argc, argv, "n:v")) != -1) {
+        switch (opt) {
+            case 'n':
+                the_config->processes_count = atoi(optarg);
+                break;
+            case 'v':
+                the_config->is_verbose = true;
+                break;
+            case '-':
+                if (strcmp(optarg, "date-size-only") == 0) {
+                    the_config->uses_md5 = false;
+                } else if (strcmp(optarg, "no-parallel") == 0) {
+                    the_config->is_parallel = false;
+                } else if (strcmp(optarg, "dry-run") == 0) {
+                    the_config->is_dry_run = true;
+                } else {
+                    fprintf(stderr, "Error : Unknown Option %s\n", optarg);
+                    return -1;
+                }
+                break;
+            default:
+                fprintf(stderr,
+                        "Usage : %s [-n processes_count] [-v] [--date-size-only] [--no-parallel] [--dry-run] source destination\n",
+                        argv[0]);
+                return -1;
+        }
+    }
+
+    if (optind + 1 < argc) {
+        strncpy(the_config->source, argv[optind], PATH_SIZE - 1);
+        strncpy(the_config->destination, argv[optind + 1], PATH_SIZE - 1);
+    } else {
+        fprintf(stderr, "Error: Source and destination paths must be specified.\n");
+        return -1;
+    }
+
+    return 0;
+}
