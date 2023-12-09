@@ -41,3 +41,45 @@ int get_file_stats(files_list_entry_t *entry) {
 
     return 0;
 }
+
+int compute_file_md5(files_list_entry_t *entry) {
+    FILE *file = fopen(entry->path_and_name, "rb");
+    if (!file) {
+        perror("fopen");
+        return -1;
+    }
+
+    EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+    const EVP_MD *md = EVP_md5();
+
+    if ((!mdctx || !md) || (1 != EVP_DigestInit_ex(mdctx, md, NULL))) {
+        fclose(file);
+        EVP_MD_CTX_free(mdctx);
+        perror("EVP_DigestInit_ex");
+        return -1;
+    }
+
+    unsigned char buffer[1024];
+    size_t bytes;
+    while ((bytes = fread(buffer, 1, sizeof(buffer), file)) != 0) {
+        if (1 != EVP_DigestUpdate(mdctx, buffer, bytes)) {
+            fclose(file);
+            EVP_MD_CTX_free(mdctx);
+            perror("EVP_DigestUpdate");
+            return -1;
+        }
+    }
+
+    unsigned int md_len;
+    if (1 != EVP_DigestFinal_ex(mdctx, entry->md5sum, &md_len)) {
+        fclose(file);
+        EVP_MD_CTX_free(mdctx);
+        perror("EVP_DigestFinal_ex");
+        return -1;
+    }
+
+    EVP_MD_CTX_free(mdctx);
+    fclose(file);
+
+    return 0;
+}
