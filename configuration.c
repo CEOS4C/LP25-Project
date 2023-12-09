@@ -17,3 +17,17 @@ void display_help(char *my_name) {
     printf("  --dry-run\t\tList the changes that would need to be synchronized but doesn't perform them\n");
     printf("  -v\t\t\tEnable verbose mode\n");
 }
+void init_configuration(configuration_t *the_config) {
+    if (the_config == NULL) {
+        fprintf(stderr, "Error: Invalid configuration pointer.\n");
+        return;
+    } else {
+        strcpy(the_config->source, "");
+        strcpy(the_config->destination, "");
+        the_config->processes_count = 1;
+        the_config->is_parallel = true;
+        the_config->uses_md5 = true;
+        the_config->is_verbose = false;
+        the_config->is_dry_run = false;
+    }
+}
