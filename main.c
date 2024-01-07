@@ -1,11 +1,11 @@
 #include <stdio.h>
-#include <assert.h>
 #include <unistd.h>
 
 #include "sync.h"
 #include "configuration.h"
 #include "file-properties.h"
 #include "processes.h"
+
 
 /*!
  * @brief main function, calling all the mechanics of the program
