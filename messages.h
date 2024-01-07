@@ -63,3 +63,4 @@ int send_list_end(int msg_queue, int recipient);
 int send_terminate_command(int msg_queue, int recipient);
 
 int send_terminate_confirm(int msg_queue, int recipient);
+
